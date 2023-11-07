@@ -17,6 +17,7 @@ interface AppContextType {
     setIsLoading: (loading: boolean) => void;
     setUser: (user: User) => void;
     setUserName: (userName: string) => void;
+    
 }
 
 // Create Context with default values

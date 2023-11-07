@@ -4,17 +4,24 @@ import { Task } from "../models/task.js";
 
 export const AddNewTask = async (req, res, next) => {
     try {
-        const { title, description } = req.body;
+        const { title, description, startDate, endDate } = req.body;
+
+        // Validate startDate and endDate
+        if (!startDate || !endDate) {
+            return next(new ErrorHandler("Start date and end date are required", 400));
+        }
 
         await Task.create({
             title,
             description,
-            user: req.user
+            user: req.user,
+            startDate,
+            endDate
         })
 
         res.status(201).json({
             success: true,
-            message: "Task Added Succussfully",
+            message: "Task Added Successfully",
         })
     } catch (error) {
         next(error)

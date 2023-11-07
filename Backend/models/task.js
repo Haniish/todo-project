@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-//Model
 const taskSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -12,7 +11,7 @@ const taskSchema = new mongoose.Schema({
     },
     isCompleted: {
         type: Boolean,
-        default: false,
+        default: false
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -21,10 +20,17 @@ const taskSchema = new mongoose.Schema({
     },
     createdAt: {
         type: Date,
-        default: Date.now,
-
+        default: Date.now
     },
-
+    // New fields for scheduling
+    startDate: {
+        type: Date,
+        required: true // Set to true if you want the start date to be required
+    },
+    endDate: {
+        type: Date,
+        required: true // Set to true if you want the end date to be required
+    }
 });
 
 export const Task = mongoose.model("Task", taskSchema);

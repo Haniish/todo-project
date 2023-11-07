@@ -43,6 +43,12 @@ function Header() {
           <Link to="/">Home</Link>
         </ul>
         <ul>
+          <Link to="/completedtasks">Completed Tasks</Link>
+        </ul>
+        <ul>
+          <Link to="/scheduler">Tasks Calender</Link>
+        </ul>
+        <ul>
           <Link to="/profile">Profile</Link>
         </ul>
 

@@ -12,18 +12,24 @@ import {
   Tr,
   Th,
   TableContainer,
+  Box, Button, Flex, FormControl, FormLabel, Input, Stack, useToast, VStack 
 } from "@chakra-ui/react";
+
 
 interface Task {
   _id: string;
   title: string;
   description: string;
   isCompleted: boolean;
+  startDate: string; // assuming ISO format for dates
+  endDate: string;   // assuming ISO format for dates
 }
 
 function Home() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState(""); // New state for start date
+  const [endDate, setEndDate] = useState("");     // New state for end date
   const [loading, setLoading] = useState(false);
   const [userTasks, setUserTasks] = useState<Task[]>([]);
   const [refresh, setRefresh] = useState(false);
@@ -64,8 +70,36 @@ function Home() {
     }
   };
 
+  const validateDates = (start: string, end: string): boolean => {
+    const now = new Date();
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    if (startDate >= endDate) {
+      toast.error('Start date must be earlier than end date.');
+      return false;
+    }
+
+    if (startDate < now || endDate < now) {
+      toast.error('Dates cannot be in the past.');
+      return false;
+    }
+
+    if (!start || !end) {
+      toast.error('Both start and end dates must be provided.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validateDates(startDate, endDate)) {
+      setLoading(false);
+      return; // Stop form submission if validation fails
+    }
+
     setLoading(true);
     try {
       const { data } = await axios.post(
@@ -73,6 +107,8 @@ function Home() {
         {
           title,
           description,
+          startDate, // Include startDate in the request
+          endDate,   // Include endDate in the request
         },
         {
           withCredentials: true,
@@ -85,6 +121,8 @@ function Home() {
       toast.success(data.message);
       setTitle("");
       setDescription("");
+      setStartDate(""); // Reset start date
+      setEndDate("");   // Reset end date
       setRefresh((prev) => !prev);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -112,6 +150,8 @@ function Home() {
     getAllTask();
   }, [refresh]);
 
+  
+
   if (!isAuth) return <Navigate to="/login" />;
 
   return (
@@ -129,7 +169,19 @@ function Home() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <button type="submit">ADD TASK</button>
+        <input
+          type="datetime-local" // Use datetime-local input for date and time
+          placeholder="Start Date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
+        <input
+          type="datetime-local" // Use datetime-local input for date and time
+          placeholder="End Date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
+        <button type="submit" disabled={loading}>ADD TASK</button>
       </form>
 
       <div className="sub-Container" style={{  }}>
